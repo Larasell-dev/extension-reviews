@@ -66,4 +66,4 @@ jobs:
         run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run Pest
-        run: composer test
+        run: composer pest

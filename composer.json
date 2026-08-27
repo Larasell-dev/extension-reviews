@@ -31,7 +31,7 @@
     },
     "scripts": {
         "pint": "pint",
-        "test": "pest"
+        "pest": "pest"
     },
     "config": {
         "allow-plugins": {
