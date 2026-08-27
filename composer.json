@@ -1,0 +1,42 @@
+{
+    "name": "larasell/reviews",
+    "description": "Product reviews for Larasell",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Larasell\\Reviews\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Larasell\\Reviews\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Larasell\\Reviews\\ReviewsServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "larasell/larasell": "^1.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^5.1"
+    },
+    "scripts": {
+        "test": "pest"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
