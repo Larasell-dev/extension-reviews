@@ -1,5 +1,5 @@
 {
-    "name": "larasell/reviews",
+    "name": "larasell-dev/reviews",
     "description": "Product reviews for Larasell",
     "type": "library",
     "license": "MIT",
@@ -22,7 +22,7 @@
     },
     "require": {
         "php": "^8.2",
-        "larasell/larasell": "^1.0"
+        "larasell-dev/larasell": "^1.0"
     },
     "require-dev": {
         "orchestra/testbench": "^11.0",
