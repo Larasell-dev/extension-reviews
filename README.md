@@ -1,6 +1,6 @@
 # Larasell Reviews
 
-Product reviews for Larasell. A review has a reviewer name, numeric value, and optional content.
+Product reviews for Larasell.
 
 ## Installation
 
