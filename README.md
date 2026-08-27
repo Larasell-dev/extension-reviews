@@ -5,7 +5,7 @@ Product reviews for Larasell.
 ## Installation
 
 ```bash
-composer require larasell/reviews
+composer require larasell-dev/reviews
 php artisan migrate
 ```
 
