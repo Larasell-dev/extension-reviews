@@ -25,10 +25,12 @@
         "larasell-dev/larasell": "^1.0"
     },
     "require-dev": {
+        "laravel/pint": "^1.30",
         "orchestra/testbench": "^11.0",
         "pestphp/pest": "^5.1"
     },
     "scripts": {
+        "pint": "pint",
         "test": "pest"
     },
     "config": {
