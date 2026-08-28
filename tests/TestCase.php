@@ -19,13 +19,10 @@ abstract class TestCase extends BaseTestCase
 
     protected function getEnvironmentSetUp($app): void
     {
-        $app['config']->set('database.default', 'testing');
-        $app['config']->set('database.connections.testing', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-            'prefix' => '',
-            'foreign_key_constraints' => true,
-        ]);
+        $connection = env('DB_CONNECTION', 'sqlite');
+
+        $app['config']->set('database.default', $connection);
+        $app['config']->set('database.connections.sqlite.database', env('DB_DATABASE', ':memory:'));
         $app['config']->set('larasell.models.product', Product::class);
     }
 }
