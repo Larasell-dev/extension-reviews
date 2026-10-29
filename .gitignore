@@ -1,0 +1,10 @@
+/.phpunit.cache
+/node_modules
+/vendor
+.env
+.phpunit.result.cache
+/.amp/*
+!/.amp/services.yaml
+/.idea
+/.vscode
+/.zed

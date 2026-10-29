@@ -1,0 +1,56 @@
+{
+  "name": "larasell-dev/reviews",
+  "description": "Product reviews for Larasell",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nils Haberkamp",
+      "email": "nils@larasell.dev"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "laravel/framework": "^13.23"
+  },
+  "autoload": {
+    "psr-4": {
+      "Larasell\\Reviews\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Larasell\\Reviews\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Larasell\\Reviews\\ReviewsServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    },
+    "sort-packages": true,
+    "platform": {
+      "php": "8.3"
+    }
+  },
+  "scripts": {
+    "lint": "vendor/bin/pint",
+    "lint:check": "vendor/bin/pint --test",
+    "phpstan": "phpstan analyse",
+    "test": "vendor/bin/pest"
+  },
+  "require-dev": {
+    "larastan/larastan": "^3.0",
+    "laravel/pint": "^1.32",
+    "orchestra/testbench": "^11.0",
+    "pestphp/pest": "^4.7",
+    "pestphp/pest-plugin-laravel": "^4.1"
+  }
+}
