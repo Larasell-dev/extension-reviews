@@ -8,6 +8,7 @@ use Illuminate\Testing\TestResponse;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Reviews\Enums\ProductReviewStatus;
 use Larasell\Reviews\Events\ProductReviewApproved;
+use Larasell\Reviews\Events\ProductReviewDeleted;
 use Larasell\Reviews\Events\ProductReviewRejected;
 use Larasell\Reviews\Events\ProductReviewSubmitted;
 use Larasell\Reviews\Events\ProductReviewUpdated;
@@ -305,6 +306,16 @@ it('refuses to change a review\'s product or customer', function () {
         ->assertJsonPath('errors.0.source.pointer', '/data/relationships');
 
     expect($review->fresh()->product_id)->toBe($review->product_id);
+});
+
+it('deletes a review', function () {
+    $review = apiReview();
+    Event::fake();
+
+    jsonApi('DELETE', route('larasell.reviews.api.destroy', $review))->assertNoContent();
+
+    expect(ProductReview::count())->toBe(0);
+    Event::assertDispatched(ProductReviewDeleted::class, fn (ProductReviewDeleted $event) => $event->review->is($review));
 });
 
 it('links single-review documents to themselves at the top level', function () {

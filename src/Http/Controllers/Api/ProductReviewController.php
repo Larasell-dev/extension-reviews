@@ -4,10 +4,12 @@ namespace Larasell\Reviews\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Larasell\Models\ModelRegistry;
 use Larasell\Larasell\Models\Product;
 use Larasell\Reviews\Actions\ApproveProductReview;
+use Larasell\Reviews\Actions\DeleteProductReview;
 use Larasell\Reviews\Actions\RejectProductReview;
 use Larasell\Reviews\Actions\SubmitProductReview;
 use Larasell\Reviews\Actions\UpdateProductReview;
@@ -77,5 +79,12 @@ class ProductReviewController
         };
 
         return new ProductReviewResource($review);
+    }
+
+    public function destroy(ProductReview $review, DeleteProductReview $delete): Response
+    {
+        $delete->handle($review);
+
+        return response()->noContent();
     }
 }
