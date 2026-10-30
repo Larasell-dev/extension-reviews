@@ -9,6 +9,7 @@ use Larasell\Admin\Enums\Icon;
 use Larasell\Admin\Enums\NavItem;
 use Larasell\Admin\Facades\Navigation;
 use Larasell\Reviews\Http\Controllers\ProductReviewApprovalController;
+use Larasell\Reviews\Http\Controllers\ProductReviewController;
 use Larasell\Reviews\Http\Controllers\ProductReviewRejectionController;
 use Larasell\Reviews\Tables\ProductReviews;
 
@@ -29,7 +30,7 @@ class ReviewsServiceProvider extends ServiceProvider
             ], 'larasell-reviews-config');
         }
 
-        // The admin pages and their styles, built by vite.config.ts under the same name.
+        // The review page and its styles, built by vite.config.ts under the same name.
         AdminPanel::resolve()->vite('larasell-reviews', dirname(__DIR__).'/public', [
             'resources/js/admin.ts',
             'resources/css/admin.css',
@@ -38,6 +39,7 @@ class ReviewsServiceProvider extends ServiceProvider
         Navigation::index('Reviews', 'product-reviews', ProductReviews::class, icon: Icon::Star)->under(NavItem::Products);
 
         AdminPanel::resolve()->routes(function (): void {
+            Route::get('product-reviews/{productReview}', [ProductReviewController::class, 'show'])->name('product-reviews.show');
             Route::post('product-reviews/{productReview}/approval', [ProductReviewApprovalController::class, 'store'])->name('product-reviews.approval.store');
             Route::post('product-reviews/{productReview}/rejection', [ProductReviewRejectionController::class, 'store'])->name('product-reviews.rejection.store');
         });
