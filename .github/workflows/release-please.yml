@@ -94,6 +94,9 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
+      - name: Generate enum types
+        run: composer types:enums
+
       - name: Build the admin assets
         run: npm run build
 

@@ -37,6 +37,19 @@ class WorkbenchServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // `composer types:enums` writes the package's enums to resources/js/wayfinder.
+        // The rest is Laravel Data's job, so Wayfinder skips it.
+        config([
+            'wayfinder.generate.route.actions' => false,
+            'wayfinder.generate.route.named' => false,
+            'wayfinder.generate.models' => false,
+            'wayfinder.generate.inertia.shared_data' => false,
+            'wayfinder.generate.broadcast.channels' => false,
+            'wayfinder.generate.broadcast.events' => false,
+            'wayfinder.generate.environment_variables' => false,
+            'wayfinder.generate.enums' => true,
+        ]);
+
         // Amp orb portals terminate TLS and forward over HTTP; trusting the proxy
         // makes generated asset URLs use https instead of being blocked as mixed content.
         TrustProxies::at('*');

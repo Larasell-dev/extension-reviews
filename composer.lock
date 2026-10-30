@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9b409612b8a94a56f085e00010adf63",
+    "content-hash": "33debefb5f03094aaa4ef7047a449f81",
     "packages": [
         {
             "name": "brick/math",
@@ -7832,6 +7832,145 @@
             "time": "2026-09-10T10:47:55+00:00"
         },
         {
+            "name": "laravel/ranger",
+            "version": "v0.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/ranger.git",
+                "reference": "56d06fc93db115b4ff37d82e1a5b1afa3df97e9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/ranger/zipball/56d06fc93db115b4ff37d82e1a5b1afa3df97e9b",
+                "reference": "56d06fc93db115b4ff37d82e1a5b1afa3df97e9b",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^11.0|^12.0|^13.0",
+                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "illuminate/routing": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "laravel/pint": "^1.22",
+                "laravel/surveyor": "^0.3.0",
+                "nikic/php-parser": "^5.4",
+                "php": "^8.2",
+                "phpstan/phpdoc-parser": "^2.1",
+                "spatie/php-structure-discoverer": "^2.3"
+            },
+            "require-dev": {
+                "inertiajs/inertia-laravel": "^2.0",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^3.0",
+                "phpstan/phpstan": "2.1.24"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Ranger\\RangerServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Ranger\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Laravel Ranger is a powerful introspection library for Laravel applications.",
+            "homepage": "https://github.com/laravel/ranger",
+            "keywords": [
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/ranger/issues",
+                "source": "https://github.com/laravel/ranger"
+            },
+            "time": "2026-09-02T23:02:02+00:00"
+        },
+        {
+            "name": "laravel/surveyor",
+            "version": "v0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/surveyor.git",
+                "reference": "af01270c7f2b5573969a3fc4dd3814a12500c758"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/surveyor/zipball/af01270c7f2b5573969a3fc4dd3814a12500c758",
+                "reference": "af01270c7f2b5573969a3fc4dd3814a12500c758",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^11.0|^12.0|^13.0",
+                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "illuminate/routing": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "nikic/php-parser": "^5.4",
+                "php": "^8.2",
+                "phpstan/phpdoc-parser": "^2.1",
+                "spatie/php-structure-discoverer": "^2.3"
+            },
+            "require-dev": {
+                "inertiajs/inertia-laravel": "^3.1",
+                "laravel/pint": "^1.22",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^3.0",
+                "phpstan/phpstan": "^2.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Surveyor\\SurveyorServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Surveyor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Static analysis tool for Laravel applications.",
+            "homepage": "https://github.com/laravel/surveyor",
+            "keywords": [
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/surveyor/issues",
+                "source": "https://github.com/laravel/surveyor"
+            },
+            "time": "2026-08-22T02:39:21+00:00"
+        },
+        {
             "name": "laravel/tinker",
             "version": "v3.0.2",
             "source": {
@@ -7899,6 +8038,72 @@
                 "source": "https://github.com/laravel/tinker/tree/v3.0.2"
             },
             "time": "2026-03-17T14:54:13+00:00"
+        },
+        {
+            "name": "laravel/wayfinder",
+            "version": "dev-next",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/wayfinder.git",
+                "reference": "be273f802dbcc3c9a4a411ab1eea7586b922f7c9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/wayfinder/zipball/be273f802dbcc3c9a4a411ab1eea7586b922f7c9",
+                "reference": "be273f802dbcc3c9a4a411ab1eea7586b922f7c9",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^12.0|^13.0",
+                "illuminate/filesystem": "^12.0|^13.0",
+                "illuminate/routing": "^12.0|^13.0",
+                "illuminate/support": "^12.0|^13.0",
+                "laravel/ranger": "^0.5.1",
+                "laravel/surveyor": "^0.3.0",
+                "php": "^8.2",
+                "phpstan/phpdoc-parser": "^2.3"
+            },
+            "require-dev": {
+                "inertiajs/inertia-laravel": "^3.0",
+                "laravel/pint": "^1.21",
+                "orchestra/testbench": "^10.1|^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Wayfinder\\WayfinderServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Wayfinder\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Generate TypeScript representations of your Laravel actions and routes.",
+            "homepage": "https://github.com/laravel/wayfinder",
+            "keywords": [
+                "laravel",
+                "php",
+                "routes",
+                "typescript"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/wayfinder/issues",
+                "source": "https://github.com/laravel/wayfinder"
+            },
+            "time": "2026-09-10T13:39:05+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -11102,9 +11307,11 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": {},
-    "prefer-stable": false,
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "laravel/wayfinder": 20
+    },
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3"
