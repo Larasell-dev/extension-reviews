@@ -33,6 +33,7 @@ New reviews are pending. `ApproveProductReview` and `RejectProductReview` change
 A JSON:API 1.1 API under `/api/product-reviews` lists, shows, creates, updates (`PATCH`) and
 deletes reviews. Every request needs an API token, which an admin creates under
 **Settings > API tokens**, sent as `Authorization: Bearer <token>`; without one it answers 401.
+[`openapi.yaml`](openapi.yaml) describes it; open it in Yaak, Swagger UI or Redoc.
 
 ## Events
 
