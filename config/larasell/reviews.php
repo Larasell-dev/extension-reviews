@@ -10,6 +10,12 @@ return [
          */
         'middleware' => ['api'],
 
+        /*
+         * How many reviews one client can submit per minute: one user once the API has
+         * authentication, one IP address until then. Further submissions get a 429.
+         */
+        'submissions_per_minute' => 10,
+
     ],
 
 ];

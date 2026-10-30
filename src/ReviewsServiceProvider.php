@@ -3,10 +3,12 @@
 namespace Larasell\Reviews;
 
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\ValidationException;
@@ -30,6 +32,8 @@ class ReviewsServiceProvider extends ServiceProvider
 {
     public const string API_PREFIX = 'api/product-reviews';
 
+    private const string SUBMISSION_LIMITER = 'larasell-reviews-submissions';
+
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/larasell/reviews.php', 'larasell.reviews');
@@ -39,12 +43,16 @@ class ReviewsServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
+        // Per client: the signed-in user once the API has authentication, its IP address until then.
+        RateLimiter::for(self::SUBMISSION_LIMITER, fn (Request $request): Limit => Limit::perMinute((int) config('larasell.reviews.api.submissions_per_minute'))
+            ->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+
         Route::middleware([...config('larasell.reviews.api.middleware'), JsonApi::class])
             ->prefix(self::API_PREFIX)
             ->name('larasell.reviews.api.')
             ->group(function (): void {
                 Route::get('/', [ApiProductReviewController::class, 'index'])->name('index');
-                Route::post('/', [ApiProductReviewController::class, 'store'])->name('store');
+                Route::post('/', [ApiProductReviewController::class, 'store'])->middleware('throttle:'.self::SUBMISSION_LIMITER)->name('store');
                 Route::get('{review}', [ApiProductReviewController::class, 'show'])->name('show');
             });
 

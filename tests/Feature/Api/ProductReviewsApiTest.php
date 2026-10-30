@@ -283,6 +283,25 @@ it('serves clients that accept JSON:API without parameters, with a profile, or a
     'anything' => ['*/*'],
 ]);
 
+it('limits how many reviews one client can submit per minute', function () {
+    config(['larasell.reviews.api.submissions_per_minute' => 2]);
+
+    jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument())->assertCreated();
+    jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument())->assertCreated();
+    $response = jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument())
+        ->assertTooManyRequests()
+        ->assertHeader('Retry-After', '60');
+
+    expect(ProductReview::count())->toBe(2)
+        ->and(snapshotOf($response))->toMatchSnapshot();
+
+    // Reading isn't limited by submissions.
+    jsonApi('GET', route('larasell.reviews.api.index'))->assertOk();
+
+    $this->travel(61)->seconds();
+    jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument())->assertCreated();
+});
+
 it('serves the routes under /api/product-reviews', function () {
     expect(route('larasell.reviews.api.index', absolute: false))->toBe('/api/product-reviews')
         ->and(route('larasell.reviews.api.show', 7, absolute: false))->toBe('/api/product-reviews/7');
