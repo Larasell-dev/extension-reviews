@@ -42,7 +42,7 @@ class JsonApi
      */
     private function negotiateContentType(Request $request): void
     {
-        if (! in_array($request->method(), ['POST'], true)) {
+        if (! in_array($request->method(), ['POST', 'PATCH'], true)) {
             return;
         }
 
