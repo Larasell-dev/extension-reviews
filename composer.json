@@ -11,7 +11,16 @@
   ],
   "require": {
     "php": "^8.3",
+    "larasell-dev/admin": "^0.5",
+    "larasell-dev/larasell": "^1.18",
     "laravel/framework": "^13.23"
+  },
+  "require-dev": {
+    "larastan/larastan": "^3.0",
+    "laravel/pint": "^1.32",
+    "orchestra/testbench": "^11.0",
+    "pestphp/pest": "^4.7",
+    "pestphp/pest-plugin-laravel": "^4.1"
   },
   "autoload": {
     "psr-4": {
@@ -20,7 +29,9 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Larasell\\Reviews\\Tests\\": "tests/"
+      "Larasell\\Reviews\\Tests\\": "tests/",
+      "Workbench\\App\\": "workbench/app/",
+      "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
     }
   },
   "extra": {
@@ -45,12 +56,5 @@
     "lint:check": "vendor/bin/pint --test",
     "phpstan": "phpstan analyse",
     "test": "vendor/bin/pest"
-  },
-  "require-dev": {
-    "larastan/larastan": "^3.0",
-    "laravel/pint": "^1.32",
-    "orchestra/testbench": "^11.0",
-    "pestphp/pest": "^4.7",
-    "pestphp/pest-plugin-laravel": "^4.1"
   }
 }
