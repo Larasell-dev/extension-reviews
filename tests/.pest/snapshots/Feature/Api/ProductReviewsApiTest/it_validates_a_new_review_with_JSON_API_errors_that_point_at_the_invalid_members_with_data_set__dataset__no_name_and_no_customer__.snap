@@ -1,0 +1,15 @@
+{
+    "jsonapi": {
+        "version": "1.1"
+    },
+    "errors": [
+        {
+            "status": "422",
+            "title": "Unprocessable Content",
+            "detail": "The name field is required when customer is not present.",
+            "source": {
+                "pointer": "/data/attributes/name"
+            }
+        }
+    ]
+}

@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\ValidationException;
 use Larasell\Admin\AdminPanel;
 use Larasell\Admin\Enums\Icon;
 use Larasell\Admin\Enums\NavItem;
@@ -43,6 +44,7 @@ class ReviewsServiceProvider extends ServiceProvider
             ->name('larasell.reviews.api.')
             ->group(function (): void {
                 Route::get('/', [ApiProductReviewController::class, 'index'])->name('index');
+                Route::post('/', [ApiProductReviewController::class, 'store'])->name('store');
                 Route::get('{review}', [ApiProductReviewController::class, 'show'])->name('show');
             });
 
@@ -70,8 +72,8 @@ class ReviewsServiceProvider extends ServiceProvider
     }
 
     /**
-     * Errors on the API's routes are JSON:API error documents, with one error object for a client
-     * error such as a missing review.
+     * Errors on the API's routes are JSON:API error documents: one error object per invalid
+     * member, each pointing at it, and one for other client errors such as a missing review.
      * Other requests keep the application's error responses.
      */
     private function renderApiErrors(): void
@@ -90,6 +92,13 @@ class ReviewsServiceProvider extends ServiceProvider
             ]);
 
             [$status, $errors] = match (true) {
+                $e instanceof ValidationException => [422, collect($e->errors())
+                    ->flatMap(fn (array $messages, string $key) => array_map(
+                        fn (string $message) => $error(422, $message, ['pointer' => '/'.str_replace('.', '/', $key)]),
+                        $messages,
+                    ))
+                    ->values()
+                    ->all()],
                 $e instanceof JsonApiError => [$e->getStatusCode(), [$error($e->getStatusCode(), $e->getMessage(), $e->source)]],
                 // Route model binding's message names the model class; say it in the API's terms.
                 $e instanceof NotFoundHttpException && $e->getPrevious() instanceof ModelNotFoundException => [404, [$error(404, 'No product review has this id.')]],

@@ -2,6 +2,7 @@
 
 namespace Larasell\Reviews\Http\Resources;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\JsonApi\JsonApiRequest;
 use Illuminate\Http\Resources\JsonApi\JsonApiResource;
@@ -82,5 +83,17 @@ class ProductReviewResource extends JsonApiResource
             ...parent::with($request),
             'links' => ['self' => route('larasell.reviews.api.show', $this->resource)],
         ];
+    }
+
+    /**
+     * A 201 Created names the new review's URL, as the spec asks.
+     */
+    public function withResponse(Request $request, JsonResponse $response): void
+    {
+        parent::withResponse($request, $response);
+
+        if ($this->resource->wasRecentlyCreated) {
+            $response->headers->set('Location', route('larasell.reviews.api.show', $this->resource));
+        }
     }
 }

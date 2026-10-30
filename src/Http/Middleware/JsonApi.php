@@ -22,6 +22,7 @@ class JsonApi
 
     public function handle(Request $request, Closure $next): Response
     {
+        $this->negotiateContentType($request);
         $this->negotiateAccept($request);
 
         // Laravel keeps the version in a static property shared by every JSON:API resource, so
@@ -33,6 +34,26 @@ class JsonApi
             return $next($request);
         } finally {
             JsonApiResource::$jsonApiInformation = $previous;
+        }
+    }
+
+    /**
+     * Request documents must be sent as JSON:API, with no media type parameters but profile.
+     */
+    private function negotiateContentType(Request $request): void
+    {
+        if (! in_array($request->method(), ['POST'], true)) {
+            return;
+        }
+
+        $contentType = AcceptHeaderItem::fromString((string) $request->headers->get('Content-Type'));
+
+        if ($contentType->getValue() !== self::MEDIA_TYPE) {
+            throw JsonApiError::unsupportedMediaType('Send request documents as '.self::MEDIA_TYPE.'.');
+        }
+
+        if (! $this->isServable($contentType)) {
+            throw JsonApiError::unsupportedMediaType('The '.self::MEDIA_TYPE.' media type takes no parameters here but profile.');
         }
     }
 

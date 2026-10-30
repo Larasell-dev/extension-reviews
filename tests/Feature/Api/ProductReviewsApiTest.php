@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use Illuminate\Http\Resources\JsonApi\JsonApiResource;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\TestResponse;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Reviews\Enums\ProductReviewStatus;
+use Larasell\Reviews\Events\ProductReviewSubmitted;
 use Larasell\Reviews\Models\ProductReview;
 
 beforeEach(function () {
@@ -34,6 +36,16 @@ function jsonApi(string $method, string $uri, array $document = [], string $cont
     ]);
 }
 
+/**
+ * A document that creates a valid review.
+ *
+ * @return array{data: array<string, mixed>}
+ */
+function newReviewDocument(): array
+{
+    return reviewDocument(['rating' => 5, 'name' => 'Alex'], ['product' => productLinkage(createProduct()->id)]);
+}
+
 function apiReview(array $attributes = []): ProductReview
 {
     return ProductReview::create([
@@ -43,6 +55,26 @@ function apiReview(array $attributes = []): ProductReview
         'comment' => 'Bright and sturdy.',
         ...$attributes,
     ]);
+}
+
+/**
+ * @param  array<string, mixed>  $attributes
+ * @param  array<string, mixed>  $relationships
+ * @return array{data: array<string, mixed>}
+ */
+function reviewDocument(array $attributes = [], array $relationships = [], array $data = []): array
+{
+    return ['data' => array_filter([
+        'type' => 'product-reviews',
+        ...$data,
+        'attributes' => $attributes,
+        'relationships' => $relationships,
+    ], fn (mixed $value): bool => $value !== [])];
+}
+
+function productLinkage(int|string $id): array
+{
+    return ['data' => ['type' => 'products', 'id' => (string) $id]];
 }
 
 it('lists reviews as a paginated JSON:API document, newest first', function () {
@@ -120,11 +152,86 @@ it('answers 404 for a review that does not exist with a JSON:API error', functio
     expect(snapshotOf($response))->toMatchSnapshot();
 });
 
+it('creates a pending review from a JSON:API document', function () {
+    Event::fake();
+    $product = createProduct();
+
+    $response = jsonApi('POST', route('larasell.reviews.api.store'), reviewDocument(
+        ['rating' => 5, 'name' => 'Alex', 'comment' => 'Would buy again.'],
+        ['product' => productLinkage($product->id)],
+    ))->assertCreated();
+
+    expect(snapshotOf($response))->toMatchSnapshot()
+        ->and(ProductReview::sole())
+        ->product_id->toBe($product->id)
+        ->customer_id->toBeNull()
+        ->status->toBe(ProductReviewStatus::Pending);
+    Event::assertDispatchedTimes(ProductReviewSubmitted::class, 1);
+});
+
+it('creates a review for a customer with their name', function () {
+    $customer = Customer::create(['first_name' => 'Ada', 'last_name' => 'Lovelace']);
+
+    jsonApi('POST', route('larasell.reviews.api.store'), reviewDocument(['rating' => 5], [
+        'product' => productLinkage(createProduct()->id),
+        'customer' => ['data' => ['type' => 'customers', 'id' => (string) $customer->id]],
+    ]))
+        ->assertCreated()
+        ->assertJsonPath('data.attributes.name', 'Ada Lovelace')
+        ->assertJsonPath('data.relationships.customer.data', ['id' => (string) $customer->id, 'type' => 'customers']);
+});
+
+it('validates a new review with JSON:API errors that point at the invalid members', function (Closure $document) {
+    $response = jsonApi('POST', route('larasell.reviews.api.store'), $document())
+        ->assertUnprocessable()
+        ->assertHeader('Content-Type', 'application/vnd.api+json');
+
+    expect(ProductReview::count())->toBe(0)
+        ->and(snapshotOf($response))->toMatchSnapshot();
+})->with([
+    // Closures, so the product exists by the time the request is made.
+    'empty' => [fn () => []],
+    'rating out of range and unknown product' => [fn () => reviewDocument(['rating' => 6, 'name' => 'Alex'], ['product' => productLinkage(999)])],
+    'no name and no customer' => [fn () => reviewDocument(['rating' => 3], ['product' => productLinkage(createProduct()->id)])],
+    'product linked as another type' => [fn () => reviewDocument(['rating' => 3, 'name' => 'Alex'], ['product' => ['data' => ['type' => 'customers', 'id' => (string) createProduct()->id]]])],
+]);
+
+it('refuses to create a resource of another type', function () {
+    $response = jsonApi('POST', route('larasell.reviews.api.store'), reviewDocument(
+        ['rating' => 5, 'name' => 'Alex'],
+        ['product' => productLinkage(createProduct()->id)],
+        ['type' => 'products'],
+    ))->assertConflict();
+
+    expect(ProductReview::count())->toBe(0)
+        ->and(snapshotOf($response))->toMatchSnapshot();
+});
+
+it('refuses client-generated ids', function () {
+    jsonApi('POST', route('larasell.reviews.api.store'), reviewDocument(
+        ['rating' => 5, 'name' => 'Alex'],
+        ['product' => productLinkage(createProduct()->id)],
+        ['id' => '42'],
+    ))
+        ->assertForbidden()
+        ->assertJsonPath('errors.0.source.pointer', '/data/id');
+
+    expect(ProductReview::count())->toBe(0);
+});
+
 it('links single-review documents to themselves at the top level', function () {
     $review = apiReview();
     $self = route('larasell.reviews.api.show', $review);
 
     jsonApi('GET', $self)->assertJsonPath('links.self', $self);
+});
+
+it('answers a new review with its location', function () {
+    $response = jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument())->assertCreated();
+
+    $self = route('larasell.reviews.api.show', ProductReview::sole());
+
+    $response->assertHeader('Location', $self)->assertJsonPath('links.self', $self);
 });
 
 it('says which JSON:API version every document follows', function (Closure $request) {
@@ -137,6 +244,24 @@ it('says which JSON:API version every document follows', function (Closure $requ
     'review' => [fn () => jsonApi('GET', route('larasell.reviews.api.show', apiReview()))],
     'error' => [fn () => jsonApi('GET', route('larasell.reviews.api.show', 999))->assertNotFound()],
 ]);
+
+it('refuses request documents that are not sent as JSON:API', function (string $contentType) {
+    $response = jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument(), contentType: $contentType)
+        ->assertUnsupportedMediaType()
+        ->assertJsonPath('errors.0.source.header', 'Content-Type');
+
+    expect(ProductReview::count())->toBe(0)
+        ->and(snapshotOf($response))->toMatchSnapshot();
+})->with([
+    'plain JSON' => ['application/json'],
+    'a media type parameter' => ['application/vnd.api+json; charset=utf-8'],
+    'an extension' => ['application/vnd.api+json; ext="https://jsonapi.org/ext/atomic"'],
+]);
+
+it('accepts request documents that apply a profile', function () {
+    jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument(), contentType: 'application/vnd.api+json; profile="https://example.com/timestamps"')
+        ->assertCreated();
+});
 
 it('answers 406 when every accepted JSON:API media type has parameters it can\'t serve', function (string $accept) {
     $response = jsonApi('GET', route('larasell.reviews.api.index'), accept: $accept)
