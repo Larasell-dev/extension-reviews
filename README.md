@@ -10,6 +10,9 @@ php artisan migrate
 php artisan larasell:link
 ```
 
+The admin panel gets a **Reviews** page below Products. It lists every review with its
+status: pending, approved or rejected.
+
 ## Usage
 
 ```php

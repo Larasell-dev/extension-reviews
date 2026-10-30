@@ -4,6 +4,10 @@ namespace Larasell\Reviews;
 
 use Illuminate\Support\ServiceProvider;
 use Larasell\Admin\AdminPanel;
+use Larasell\Admin\Enums\Icon;
+use Larasell\Admin\Enums\NavItem;
+use Larasell\Admin\Facades\Navigation;
+use Larasell\Reviews\Tables\ProductReviews;
 
 class ReviewsServiceProvider extends ServiceProvider
 {
@@ -27,5 +31,7 @@ class ReviewsServiceProvider extends ServiceProvider
             'resources/js/admin.ts',
             'resources/css/admin.css',
         ]);
+
+        Navigation::index('Reviews', 'product-reviews', ProductReviews::class, icon: Icon::Star)->under(NavItem::Products);
     }
 }
