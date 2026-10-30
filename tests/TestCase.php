@@ -15,6 +15,11 @@ use Spatie\LaravelData\LaravelDataServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
+    /**
+     * Tests don't read the playground's .env, so they run the same on every machine.
+     */
+    protected $loadEnvironmentVariables = false;
+
     protected function setUp(): void
     {
         parent::setUp();
