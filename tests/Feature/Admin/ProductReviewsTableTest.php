@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Event;
 use Inertia\Testing\AssertableInertia;
 use Larasell\Reviews\Enums\ProductReviewStatus;
+use Larasell\Reviews\Events\ProductReviewApproved;
+use Larasell\Reviews\Events\ProductReviewRejected;
 use Larasell\Reviews\Models\ProductReview;
 
 function createReview(array $attributes = []): ProductReview
@@ -14,6 +17,22 @@ function createReview(array $attributes = []): ProductReview
         'rating' => 5,
         ...$attributes,
     ]);
+}
+
+/**
+ * The url of a row action, read from the page like the admin panel's frontend reads it.
+ */
+function rowActionUrl(ProductReview $review, string $action): ?string
+{
+    $url = null;
+
+    test()->get(route('larasell.admin.product-reviews.index'))
+        ->assertInertia(function (AssertableInertia $page) use ($review, $action, &$url) {
+            $row = collect($page->toArray()['props']['table']['rows'])->firstWhere('id', $review->id);
+            $url = collect($row['_actions'])->firstWhere('name', $action)['url'] ?? null;
+        });
+
+    return $url;
 }
 
 it('lists reviews with their product, customer, rating, comment and status, newest first', function () {
@@ -62,6 +81,19 @@ it('colours each review status', function (ProductReviewStatus $status, string $
     'rejected' => [ProductReviewStatus::Rejected, 'Rejected', 'danger'],
 ]);
 
+it('offers the actions that change a review\'s status', function (ProductReviewStatus $status, array $actions) {
+    signInAdmin();
+    createReview(['status' => $status]);
+
+    $this->get(route('larasell.admin.product-reviews.index'))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('table.rows.0._actions', fn ($rowActions) => collect($rowActions)->pluck('name')->all() === $actions));
+})->with([
+    'pending' => [ProductReviewStatus::Pending, ['approve', 'reject']],
+    'approved' => [ProductReviewStatus::Approved, ['reject']],
+    'rejected' => [ProductReviewStatus::Rejected, ['approve']],
+]);
+
 it('shows an empty state without reviews', function () {
     signInAdmin();
 
@@ -88,6 +120,38 @@ it('nests the reviews page under products, which still links to the products pag
             ->where('navigation.2.id', 'larasell.admin.categories.index'));
 });
 
+it('approves a review from its row', function () {
+    signInAdmin();
+    $review = createReview();
+    Event::fake([ProductReviewApproved::class]);
+
+    $this->from(route('larasell.admin.product-reviews.index'))
+        ->post(rowActionUrl($review, 'approve'))
+        ->assertRedirect(route('larasell.admin.product-reviews.index'));
+
+    expect($review->fresh()->status)->toBe(ProductReviewStatus::Approved);
+    Event::assertDispatchedTimes(ProductReviewApproved::class, 1);
+});
+
+it('rejects a review from its row', function () {
+    signInAdmin();
+    $review = createReview();
+    Event::fake([ProductReviewRejected::class]);
+
+    $this->from(route('larasell.admin.product-reviews.index'))
+        ->post(rowActionUrl($review, 'reject'))
+        ->assertRedirect(route('larasell.admin.product-reviews.index'));
+
+    expect($review->fresh()->status)->toBe(ProductReviewStatus::Rejected);
+    Event::assertDispatchedTimes(ProductReviewRejected::class, 1);
+});
+
 it('sends guests to the login page', function () {
+    $review = createReview();
+
     $this->get(route('larasell.admin.product-reviews.index'))->assertRedirect(route('larasell.admin.login'));
+    $this->post(route('larasell.admin.product-reviews.approval.store', $review))->assertRedirect(route('larasell.admin.login'));
+    $this->post(route('larasell.admin.product-reviews.rejection.store', $review))->assertRedirect(route('larasell.admin.login'));
+
+    expect($review->fresh()->status)->toBe(ProductReviewStatus::Pending);
 });

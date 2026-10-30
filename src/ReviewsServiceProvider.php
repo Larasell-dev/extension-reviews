@@ -2,11 +2,14 @@
 
 namespace Larasell\Reviews;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Larasell\Admin\AdminPanel;
 use Larasell\Admin\Enums\Icon;
 use Larasell\Admin\Enums\NavItem;
 use Larasell\Admin\Facades\Navigation;
+use Larasell\Reviews\Http\Controllers\ProductReviewApprovalController;
+use Larasell\Reviews\Http\Controllers\ProductReviewRejectionController;
 use Larasell\Reviews\Tables\ProductReviews;
 
 class ReviewsServiceProvider extends ServiceProvider
@@ -33,5 +36,10 @@ class ReviewsServiceProvider extends ServiceProvider
         ]);
 
         Navigation::index('Reviews', 'product-reviews', ProductReviews::class, icon: Icon::Star)->under(NavItem::Products);
+
+        AdminPanel::resolve()->routes(function (): void {
+            Route::post('product-reviews/{productReview}/approval', [ProductReviewApprovalController::class, 'store'])->name('product-reviews.approval.store');
+            Route::post('product-reviews/{productReview}/rejection', [ProductReviewRejectionController::class, 'store'])->name('product-reviews.rejection.store');
+        });
     }
 }
