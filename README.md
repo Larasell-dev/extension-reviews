@@ -22,13 +22,15 @@ app(SubmitProductReview::class)->handle($product, rating: 5, name: 'Alex', comme
 app(SubmitProductReview::class)->handle($product, rating: 4, customer: $customer);
 ```
 
-New reviews are pending.
+New reviews are pending. `ApproveProductReview` and `RejectProductReview` change their status.
 
 ## Events
 
 | Event                    | When                   |
 | ------------------------ | ---------------------- |
 | `ProductReviewSubmitted` | A review is submitted. |
+| `ProductReviewApproved`  | A review is approved.  |
+| `ProductReviewRejected`  | A review is rejected.  |
 
 All live in `Larasell\Reviews\Events`, carry the `$review`, and dispatch after the transaction commits.
 

@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
 use Larasell\Larasell\Models\Customer;
+use Larasell\Reviews\Actions\ApproveProductReview;
+use Larasell\Reviews\Actions\RejectProductReview;
 use Larasell\Reviews\Actions\SubmitProductReview;
 use Larasell\Reviews\Enums\ProductReviewStatus;
+use Larasell\Reviews\Events\ProductReviewApproved;
+use Larasell\Reviews\Events\ProductReviewRejected;
 use Larasell\Reviews\Events\ProductReviewSubmitted;
 use Larasell\Reviews\Exceptions\InvalidProductReview;
 use Larasell\Reviews\Models\ProductReview;
@@ -96,4 +100,44 @@ it('deletes the reviews of a deleted product', function () {
     $product->delete();
 
     expect(ProductReview::count())->toBe(0);
+});
+
+it('approves a review', function (ProductReviewStatus $from) {
+    $review = app(SubmitProductReview::class)->handle(createProduct(), rating: 5, name: 'Alex');
+    $review->update(['status' => $from]);
+    Event::fake();
+
+    app(ApproveProductReview::class)->handle($review);
+
+    expect($review->fresh()->status)->toBe(ProductReviewStatus::Approved);
+    Event::assertDispatchedTimes(ProductReviewApproved::class, 1);
+    Event::assertDispatched(ProductReviewApproved::class, fn (ProductReviewApproved $event) => $event->review->is($review));
+    Event::assertNotDispatched(ProductReviewRejected::class);
+})->with([ProductReviewStatus::Pending, ProductReviewStatus::Rejected]);
+
+it('rejects a review', function (ProductReviewStatus $from) {
+    $review = app(SubmitProductReview::class)->handle(createProduct(), rating: 5, name: 'Alex');
+    $review->update(['status' => $from]);
+    Event::fake();
+
+    app(RejectProductReview::class)->handle($review);
+
+    expect($review->fresh()->status)->toBe(ProductReviewStatus::Rejected);
+    Event::assertDispatchedTimes(ProductReviewRejected::class, 1);
+    Event::assertDispatched(ProductReviewRejected::class, fn (ProductReviewRejected $event) => $event->review->is($review));
+    Event::assertNotDispatched(ProductReviewApproved::class);
+})->with([ProductReviewStatus::Pending, ProductReviewStatus::Approved]);
+
+it('does not announce a review again when it already has that status', function () {
+    $review = app(SubmitProductReview::class)->handle(createProduct(), rating: 5, name: 'Alex');
+    app(ApproveProductReview::class)->handle($review);
+    $rejected = app(SubmitProductReview::class)->handle(createProduct('Desk chair'), rating: 1, name: 'Sam');
+    app(RejectProductReview::class)->handle($rejected);
+    Event::fake();
+
+    app(ApproveProductReview::class)->handle($review);
+    app(RejectProductReview::class)->handle($rejected);
+
+    Event::assertNotDispatched(ProductReviewApproved::class);
+    Event::assertNotDispatched(ProductReviewRejected::class);
 });
