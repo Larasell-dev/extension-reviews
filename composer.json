@@ -12,6 +12,7 @@
   "require": {
     "php": "^8.3",
     "larasell-dev/admin": "^0.5",
+    "larasell-dev/chronicle": "^0.2.7",
     "larasell-dev/larasell": "^1.18",
     "laravel/framework": "^13.23"
   },
