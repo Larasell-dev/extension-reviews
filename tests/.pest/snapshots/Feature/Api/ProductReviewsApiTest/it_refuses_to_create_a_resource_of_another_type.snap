@@ -1,0 +1,15 @@
+{
+    "jsonapi": {
+        "version": "1.1"
+    },
+    "errors": [
+        {
+            "status": "409",
+            "title": "Conflict",
+            "detail": "This endpoint creates resources of type [product-reviews].",
+            "source": {
+                "pointer": "/data/type"
+            }
+        }
+    ]
+}

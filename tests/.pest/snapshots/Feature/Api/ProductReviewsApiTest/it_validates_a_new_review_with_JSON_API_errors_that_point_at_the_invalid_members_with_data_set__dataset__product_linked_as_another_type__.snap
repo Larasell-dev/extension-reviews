@@ -1,0 +1,15 @@
+{
+    "jsonapi": {
+        "version": "1.1"
+    },
+    "errors": [
+        {
+            "status": "422",
+            "title": "Unprocessable Content",
+            "detail": "The selected product type is invalid.",
+            "source": {
+                "pointer": "/data/relationships/product/data/type"
+            }
+        }
+    ]
+}

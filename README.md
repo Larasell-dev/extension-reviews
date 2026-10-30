@@ -30,7 +30,7 @@ New reviews are pending. `ApproveProductReview` and `RejectProductReview` change
 
 ## API
 
-A JSON:API 1.1 API under `/api/product-reviews` lists and shows reviews.
+A JSON:API 1.1 API under `/api/product-reviews` lists, shows and creates reviews.
 
 ## Events
 
