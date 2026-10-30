@@ -10,6 +10,28 @@ php artisan migrate
 php artisan larasell:link
 ```
 
+## Usage
+
+```php
+use Larasell\Reviews\Actions\SubmitProductReview;
+
+// A guest review; the name is required.
+app(SubmitProductReview::class)->handle($product, rating: 5, name: 'Alex', comment: 'Great lamp.');
+
+// A customer's review copies their name, so it stays when the customer is deleted.
+app(SubmitProductReview::class)->handle($product, rating: 4, customer: $customer);
+```
+
+New reviews are pending.
+
+## Events
+
+| Event                    | When                   |
+| ------------------------ | ---------------------- |
+| `ProductReviewSubmitted` | A review is submitted. |
+
+All live in `Larasell\Reviews\Events`, carry the `$review`, and dispatch after the transaction commits.
+
 ## Development
 
 ```bash
