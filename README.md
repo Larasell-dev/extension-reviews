@@ -28,6 +28,10 @@ app(SubmitProductReview::class)->handle($product, rating: 4, customer: $customer
 
 New reviews are pending. `ApproveProductReview` and `RejectProductReview` change their status.
 
+## API
+
+A JSON:API 1.1 API under `/api/product-reviews` lists and shows reviews.
+
 ## Events
 
 | Event                    | When                   |
