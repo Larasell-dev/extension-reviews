@@ -82,7 +82,7 @@ vendor/bin/testbench larasell:link
 if ! vendor/bin/testbench larasell:list-admins 2>/dev/null | grep -q 'admin@example.com'; then
     vendor/bin/testbench larasell:create-admin --name=Admin --email=admin@example.com --password='Password-123!'
 fi
-# Sample data; see workbench/database/seeders.
+# Sample products, customers and reviews; skipped once the playground has reviews.
 vendor/bin/testbench db:seed --class='Workbench\Database\Seeders\DatabaseSeeder' --force --no-interaction
 
 step "Setup complete"

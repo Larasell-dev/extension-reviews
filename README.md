@@ -59,5 +59,5 @@ Breaking changes get an upgrade note in `breaking-changes/` and a `!` in the pul
 The build isn't committed on `main`. The release workflow builds it on release-please's release
 branch, so each release tag ships it, and CI rejects other pull requests that change it.
 
-The playground serves the admin panel with this extension installed (`vendor/bin/testbench serve`);
+The playground serves the admin panel with sample reviews (`vendor/bin/testbench serve`);
 `.agents/setup` prepares it.
