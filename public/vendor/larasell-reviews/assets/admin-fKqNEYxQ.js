@@ -1,0 +1,1 @@
+var{Larasell:e,Page:t,ResourceTable:n,SidebarLayout:r}=window.LarasellAdmin.modules[`@larasell-dev/admin`];e.booting(({pages:e})=>{});
