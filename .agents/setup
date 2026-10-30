@@ -72,6 +72,7 @@ npm ci --no-audit --no-fund --loglevel=error
 
 # --- Admin assets: the extension's bundle, loaded by AdminPanel::vite() ---
 step "Building admin assets"
+composer types:enums --quiet
 npm run build --silent
 
 # --- Playground (Testbench, served by .amp/services.yaml) ---
