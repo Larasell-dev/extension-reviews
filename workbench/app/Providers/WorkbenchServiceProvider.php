@@ -14,7 +14,7 @@ class WorkbenchServiceProvider extends ServiceProvider
         // makes generated asset URLs use https instead of being blocked as mixed content.
         TrustProxies::at('*');
 
-        // Portals open at the site root; send it to the admin panel.
-        Route::redirect('/', '/'.config('larasell.admin.panel.path'));
+        // Portals open at the site root; send it to the reviews page.
+        Route::redirect('/', '/'.config('larasell.admin.panel.path').'/product-reviews');
     }
 }
