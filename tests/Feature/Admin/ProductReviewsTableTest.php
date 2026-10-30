@@ -155,3 +155,12 @@ it('sends guests to the login page', function () {
 
     expect($review->fresh()->status)->toBe(ProductReviewStatus::Pending);
 });
+
+it('links each row to its review', function () {
+    signInAdmin();
+    $review = createReview();
+
+    $this->get(route('larasell.admin.product-reviews.index'))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('table.rows.0._link', route('larasell.admin.product-reviews.show', $review)));
+});

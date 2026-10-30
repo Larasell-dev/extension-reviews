@@ -11,7 +11,8 @@ php artisan larasell:link
 ```
 
 The admin panel gets a **Reviews** page below Products. It lists every review with its
-status (pending, approved or rejected) and lets admins approve or reject each one.
+status (pending, approved or rejected) and lets admins approve or reject each one. Each row
+opens the review on its own page.
 
 ## Usage
 

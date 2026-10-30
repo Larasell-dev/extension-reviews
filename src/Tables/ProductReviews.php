@@ -42,6 +42,11 @@ class ProductReviews extends Table
         ];
     }
 
+    public function rowLink(ProductReview $review): string
+    {
+        return route('larasell.admin.product-reviews.show', $review);
+    }
+
     public function actions(): array
     {
         return [
