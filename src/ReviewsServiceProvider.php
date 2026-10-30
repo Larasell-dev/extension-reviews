@@ -54,6 +54,7 @@ class ReviewsServiceProvider extends ServiceProvider
                 Route::get('/', [ApiProductReviewController::class, 'index'])->name('index');
                 Route::post('/', [ApiProductReviewController::class, 'store'])->middleware('throttle:'.self::SUBMISSION_LIMITER)->name('store');
                 Route::get('{review}', [ApiProductReviewController::class, 'show'])->name('show');
+                Route::patch('{review}', [ApiProductReviewController::class, 'update'])->name('update');
             });
 
         $this->renderApiErrors();

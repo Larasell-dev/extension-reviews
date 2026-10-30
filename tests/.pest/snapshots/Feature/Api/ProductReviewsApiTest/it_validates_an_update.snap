@@ -1,0 +1,31 @@
+{
+    "jsonapi": {
+        "version": "1.1"
+    },
+    "errors": [
+        {
+            "status": "422",
+            "title": "Unprocessable Content",
+            "detail": "The rating field must be between 1 and 5.",
+            "source": {
+                "pointer": "/data/attributes/rating"
+            }
+        },
+        {
+            "status": "422",
+            "title": "Unprocessable Content",
+            "detail": "The name field is required.",
+            "source": {
+                "pointer": "/data/attributes/name"
+            }
+        },
+        {
+            "status": "422",
+            "title": "Unprocessable Content",
+            "detail": "The selected status is invalid.",
+            "source": {
+                "pointer": "/data/attributes/status"
+            }
+        }
+    ]
+}

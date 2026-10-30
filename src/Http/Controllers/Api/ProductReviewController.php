@@ -7,8 +7,13 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Larasell\Models\ModelRegistry;
 use Larasell\Larasell\Models\Product;
+use Larasell\Reviews\Actions\ApproveProductReview;
+use Larasell\Reviews\Actions\RejectProductReview;
 use Larasell\Reviews\Actions\SubmitProductReview;
+use Larasell\Reviews\Actions\UpdateProductReview;
+use Larasell\Reviews\Enums\ProductReviewStatus;
 use Larasell\Reviews\Http\Requests\Api\StoreProductReviewRequest;
+use Larasell\Reviews\Http\Requests\Api\UpdateProductReviewRequest;
 use Larasell\Reviews\Http\Resources\ProductReviewResource;
 use Larasell\Reviews\Models\ProductReview;
 
@@ -56,6 +61,21 @@ class ProductReviewController
 
     public function show(ProductReview $review): ProductReviewResource
     {
+        return new ProductReviewResource($review);
+    }
+
+    public function update(UpdateProductReviewRequest $request, ProductReview $review, UpdateProductReview $update, ApproveProductReview $approve, RejectProductReview $reject): ProductReviewResource
+    {
+        $validated = $request->reviewAttributes();
+
+        $update->handle($review, $validated);
+
+        match (isset($validated['status']) ? ProductReviewStatus::from($validated['status']) : null) {
+            ProductReviewStatus::Approved => $approve->handle($review),
+            ProductReviewStatus::Rejected => $reject->handle($review),
+            default => null,
+        };
+
         return new ProductReviewResource($review);
     }
 }

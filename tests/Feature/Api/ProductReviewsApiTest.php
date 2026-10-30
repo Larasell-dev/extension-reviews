@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\TestResponse;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Reviews\Enums\ProductReviewStatus;
+use Larasell\Reviews\Events\ProductReviewApproved;
+use Larasell\Reviews\Events\ProductReviewRejected;
 use Larasell\Reviews\Events\ProductReviewSubmitted;
+use Larasell\Reviews\Events\ProductReviewUpdated;
 use Larasell\Reviews\Models\ProductReview;
 
 beforeEach(function () {
@@ -219,11 +222,98 @@ it('refuses client-generated ids', function () {
     expect(ProductReview::count())->toBe(0);
 });
 
+it('updates a review\'s rating, name and comment', function () {
+    $review = apiReview();
+    Event::fake();
+
+    $response = jsonApi('PATCH', route('larasell.reviews.api.update', $review), reviewDocument(
+        ['rating' => 2, 'name' => 'Alex P.', 'comment' => null],
+        data: ['id' => (string) $review->id],
+    ))->assertOk();
+
+    expect(snapshotOf($response))->toMatchSnapshot()
+        ->and($review->fresh())
+        ->rating->toBe(2)
+        ->name->toBe('Alex P.')
+        ->comment->toBeNull();
+    Event::assertDispatchedTimes(ProductReviewUpdated::class, 1);
+});
+
+it('leaves attributes out of an update unchanged', function () {
+    $review = apiReview();
+    Event::fake();
+
+    jsonApi('PATCH', route('larasell.reviews.api.update', $review), reviewDocument(['rating' => 4], data: ['id' => (string) $review->id]))->assertOk();
+
+    expect($review->fresh())
+        ->name->toBe('Alex')
+        ->comment->toBe('Bright and sturdy.');
+    Event::assertNotDispatched(ProductReviewUpdated::class);
+});
+
+it('approves and rejects a review through an update', function (string $status, string $event, string $other) {
+    $review = apiReview();
+    Event::fake();
+
+    jsonApi('PATCH', route('larasell.reviews.api.update', $review), reviewDocument(['status' => $status], data: ['id' => (string) $review->id]))
+        ->assertOk()
+        ->assertJsonPath('data.attributes.status', $status);
+
+    expect($review->fresh()->status->value)->toBe($status);
+    Event::assertDispatchedTimes($event, 1);
+    Event::assertNotDispatched($other);
+    Event::assertNotDispatched(ProductReviewUpdated::class);
+})->with([
+    'approve' => ['approved', ProductReviewApproved::class, ProductReviewRejected::class],
+    'reject' => ['rejected', ProductReviewRejected::class, ProductReviewApproved::class],
+]);
+
+it('validates an update', function () {
+    $review = apiReview();
+
+    $response = jsonApi('PATCH', route('larasell.reviews.api.update', $review), reviewDocument(
+        ['rating' => 0, 'name' => '', 'status' => 'pending'],
+        data: ['id' => (string) $review->id],
+    ))->assertUnprocessable();
+
+    expect(snapshotOf($response))->toMatchSnapshot()
+        ->and($review->fresh()->rating)->toBe(4);
+});
+
+it('refuses an update whose type or id does not match the url', function (Closure $data) {
+    $review = apiReview();
+    $other = apiReview();
+
+    $response = jsonApi('PATCH', route('larasell.reviews.api.update', $review), reviewDocument(['rating' => 1], data: $data($review, $other)))
+        ->assertConflict();
+
+    expect($review->fresh()->rating)->toBe(4)
+        ->and(snapshotOf($response))->toMatchSnapshot();
+})->with([
+    'another review\'s id' => [fn (ProductReview $review, ProductReview $other) => ['id' => (string) $other->id]],
+    'another type' => [fn (ProductReview $review) => ['type' => 'products', 'id' => (string) $review->id]],
+]);
+
+it('refuses to change a review\'s product or customer', function () {
+    $review = apiReview();
+
+    jsonApi('PATCH', route('larasell.reviews.api.update', $review), reviewDocument(
+        relationships: ['product' => productLinkage(createProduct('Desk chair')->id)],
+        data: ['id' => (string) $review->id],
+    ))
+        ->assertForbidden()
+        ->assertJsonPath('errors.0.source.pointer', '/data/relationships');
+
+    expect($review->fresh()->product_id)->toBe($review->product_id);
+});
+
 it('links single-review documents to themselves at the top level', function () {
     $review = apiReview();
     $self = route('larasell.reviews.api.show', $review);
 
     jsonApi('GET', $self)->assertJsonPath('links.self', $self);
+    jsonApi('PATCH', route('larasell.reviews.api.update', $review), reviewDocument(['rating' => 1], data: ['id' => (string) $review->id]))
+        ->assertJsonPath('links.self', $self);
 });
 
 it('answers a new review with its location', function () {
@@ -258,6 +348,15 @@ it('refuses request documents that are not sent as JSON:API', function (string $
     'an extension' => ['application/vnd.api+json; ext="https://jsonapi.org/ext/atomic"'],
 ]);
 
+it('refuses an update that is not sent as JSON:API', function () {
+    $review = apiReview();
+
+    jsonApi('PATCH', route('larasell.reviews.api.update', $review), reviewDocument(['rating' => 1], data: ['id' => (string) $review->id]), contentType: 'application/json')
+        ->assertUnsupportedMediaType();
+
+    expect($review->fresh()->rating)->toBe(4);
+});
+
 it('accepts request documents that apply a profile', function () {
     jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument(), contentType: 'application/vnd.api+json; profile="https://example.com/timestamps"')
         ->assertCreated();
@@ -282,6 +381,16 @@ it('serves clients that accept JSON:API without parameters, with a profile, or a
     'plain JSON' => ['application/json'],
     'anything' => ['*/*'],
 ]);
+
+it('updates with PATCH only', function () {
+    $review = apiReview();
+
+    jsonApi('POST', route('larasell.reviews.api.update', $review), reviewDocument(['rating' => 1], data: ['id' => (string) $review->id]))
+        ->assertMethodNotAllowed()
+        ->assertJsonPath('errors.0.status', '405');
+
+    expect($review->fresh()->rating)->toBe(4);
+});
 
 it('limits how many reviews one client can submit per minute', function () {
     config(['larasell.reviews.api.submissions_per_minute' => 2]);
