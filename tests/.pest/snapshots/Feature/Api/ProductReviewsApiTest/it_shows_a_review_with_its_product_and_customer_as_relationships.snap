@@ -1,0 +1,37 @@
+{
+    "data": {
+        "id": "1",
+        "type": "product-reviews",
+        "attributes": {
+            "name": "Ada Lovelace",
+            "rating": 4,
+            "comment": "Bright and sturdy.",
+            "status": "pending",
+            "created_at": "2026-10-01T09:30:00.000000Z",
+            "updated_at": "2026-10-01T09:30:00.000000Z"
+        },
+        "relationships": {
+            "product": {
+                "data": {
+                    "id": "2",
+                    "type": "products"
+                }
+            },
+            "customer": {
+                "data": {
+                    "id": "1",
+                    "type": "customers"
+                }
+            }
+        },
+        "links": {
+            "self": "http://localhost/api/product-reviews/1"
+        }
+    },
+    "jsonapi": {
+        "version": "1.1"
+    },
+    "links": {
+        "self": "http://localhost/api/product-reviews/1"
+    }
+}

@@ -1,0 +1,106 @@
+{
+    "data": [
+        {
+            "id": "3",
+            "type": "product-reviews",
+            "attributes": {
+                "name": "Reviewer 3",
+                "rating": 4,
+                "comment": "Bright and sturdy.",
+                "status": "pending",
+                "created_at": "2026-10-01T09:27:00.000000Z",
+                "updated_at": "2026-10-01T09:30:00.000000Z"
+            },
+            "relationships": {
+                "product": {
+                    "data": {
+                        "id": "3",
+                        "type": "products"
+                    }
+                },
+                "customer": {
+                    "data": null
+                }
+            },
+            "links": {
+                "self": "http://localhost/api/product-reviews/3"
+            }
+        },
+        {
+            "id": "4",
+            "type": "product-reviews",
+            "attributes": {
+                "name": "Reviewer 4",
+                "rating": 4,
+                "comment": "Bright and sturdy.",
+                "status": "pending",
+                "created_at": "2026-10-01T09:26:00.000000Z",
+                "updated_at": "2026-10-01T09:30:00.000000Z"
+            },
+            "relationships": {
+                "product": {
+                    "data": {
+                        "id": "4",
+                        "type": "products"
+                    }
+                },
+                "customer": {
+                    "data": null
+                }
+            },
+            "links": {
+                "self": "http://localhost/api/product-reviews/4"
+            }
+        }
+    ],
+    "links": {
+        "first": "http://localhost/api/product-reviews?page%5Bsize%5D=2&page%5Bnumber%5D=1",
+        "last": "http://localhost/api/product-reviews?page%5Bsize%5D=2&page%5Bnumber%5D=3",
+        "prev": "http://localhost/api/product-reviews?page%5Bsize%5D=2&page%5Bnumber%5D=1",
+        "next": "http://localhost/api/product-reviews?page%5Bsize%5D=2&page%5Bnumber%5D=3"
+    },
+    "meta": {
+        "current_page": 2,
+        "from": 3,
+        "last_page": 3,
+        "links": [
+            {
+                "url": "http://localhost/api/product-reviews?page%5Bsize%5D=2&page%5Bnumber%5D=1",
+                "label": "&laquo; Previous",
+                "page": 1,
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/product-reviews?page%5Bsize%5D=2&page%5Bnumber%5D=1",
+                "label": "1",
+                "page": 1,
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/product-reviews?page%5Bsize%5D=2&page%5Bnumber%5D=2",
+                "label": "2",
+                "page": 2,
+                "active": true
+            },
+            {
+                "url": "http://localhost/api/product-reviews?page%5Bsize%5D=2&page%5Bnumber%5D=3",
+                "label": "3",
+                "page": 3,
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/product-reviews?page%5Bsize%5D=2&page%5Bnumber%5D=3",
+                "label": "Next &raquo;",
+                "page": 3,
+                "active": false
+            }
+        ],
+        "path": "http://localhost/api/product-reviews",
+        "per_page": 2,
+        "to": 4,
+        "total": 5
+    },
+    "jsonapi": {
+        "version": "1.1"
+    }
+}

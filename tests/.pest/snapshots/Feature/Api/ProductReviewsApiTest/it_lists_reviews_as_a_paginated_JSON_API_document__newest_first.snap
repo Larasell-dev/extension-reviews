@@ -1,0 +1,94 @@
+{
+    "data": [
+        {
+            "id": "2",
+            "type": "product-reviews",
+            "attributes": {
+                "name": "Sam",
+                "rating": 2,
+                "comment": null,
+                "status": "approved",
+                "created_at": "2026-10-01T09:30:00.000000Z",
+                "updated_at": "2026-10-01T09:30:00.000000Z"
+            },
+            "relationships": {
+                "product": {
+                    "data": {
+                        "id": "2",
+                        "type": "products"
+                    }
+                },
+                "customer": {
+                    "data": null
+                }
+            },
+            "links": {
+                "self": "http://localhost/api/product-reviews/2"
+            }
+        },
+        {
+            "id": "1",
+            "type": "product-reviews",
+            "attributes": {
+                "name": "Alex",
+                "rating": 4,
+                "comment": "Bright and sturdy.",
+                "status": "pending",
+                "created_at": "2026-09-30T09:30:00.000000Z",
+                "updated_at": "2026-10-01T09:30:00.000000Z"
+            },
+            "relationships": {
+                "product": {
+                    "data": {
+                        "id": "1",
+                        "type": "products"
+                    }
+                },
+                "customer": {
+                    "data": null
+                }
+            },
+            "links": {
+                "self": "http://localhost/api/product-reviews/1"
+            }
+        }
+    ],
+    "links": {
+        "first": "http://localhost/api/product-reviews?page%5Bsize%5D=25&page%5Bnumber%5D=1",
+        "last": "http://localhost/api/product-reviews?page%5Bsize%5D=25&page%5Bnumber%5D=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "page": null,
+                "active": false
+            },
+            {
+                "url": "http://localhost/api/product-reviews?page%5Bsize%5D=25&page%5Bnumber%5D=1",
+                "label": "1",
+                "page": 1,
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "page": null,
+                "active": false
+            }
+        ],
+        "path": "http://localhost/api/product-reviews",
+        "per_page": 25,
+        "to": 2,
+        "total": 2
+    },
+    "jsonapi": {
+        "version": "1.1"
+    }
+}
