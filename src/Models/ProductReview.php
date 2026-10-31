@@ -2,9 +2,9 @@
 
 namespace Larasell\Reviews\Models;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Larasell\Models\ModelRegistry;
 use Larasell\Larasell\Models\Product;
@@ -18,8 +18,8 @@ use Larasell\Reviews\Enums\ProductReviewStatus;
  * @property int $rating From 1 to 5 stars.
  * @property string|null $comment
  * @property ProductReviewStatus $status
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property CarbonInterface|null $created_at
+ * @property CarbonInterface|null $updated_at
  * @property-read Product $product
  * @property-read Customer|null $customer
  */
