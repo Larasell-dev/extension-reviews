@@ -161,6 +161,30 @@ it('includes each product once in a list', function () {
         ->assertJsonPath('included.0.attributes.name', 'Desk lamp');
 });
 
+it('answers 400 to an include path it can\'t serve, before changing anything', function (string $method, Closure $uri, Closure $document) {
+    $review = apiReview();
+
+    $response = jsonApi($method, $uri($review), $document($review))
+        ->assertBadRequest()
+        ->assertJsonPath('errors.0.source.parameter', 'include');
+
+    expect(ProductReview::count())->toBe(1)
+        ->and($review->fresh()->rating)->toBe(4)
+        ->and(snapshotOf($response))->toMatchSnapshot();
+})->with([
+    'an unknown relationship' => ['GET', fn (ProductReview $review) => route('larasell.reviews.api.show', [$review, 'include' => 'author']), fn () => []],
+    'a nested path' => ['GET', fn () => route('larasell.reviews.api.index', ['include' => 'product.categories']), fn () => []],
+    'one bad path among good ones' => ['GET', fn () => route('larasell.reviews.api.index', ['include' => 'product,author']), fn () => []],
+    'on create' => ['POST', fn () => route('larasell.reviews.api.store', ['include' => 'author']), fn () => newReviewDocument()],
+    'on update' => ['PATCH', fn (ProductReview $review) => route('larasell.reviews.api.update', [$review, 'include' => 'author']), fn (ProductReview $review) => reviewDocument(['rating' => 1], data: ['id' => (string) $review->id])],
+]);
+
+it('includes nothing for an empty include', function () {
+    jsonApi('GET', route('larasell.reviews.api.show', [apiReview(), 'include' => '']))
+        ->assertOk()
+        ->assertJsonMissingPath('included');
+});
+
 it('answers 404 for a review that does not exist with a JSON:API error', function () {
     $response = jsonApi('GET', route('larasell.reviews.api.show', 999))
         ->assertNotFound()
