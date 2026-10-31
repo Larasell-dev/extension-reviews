@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Http\Resources\JsonApi\JsonApiResource;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\TestResponse;
+use Larasell\Admin\Actions\ApiTokens\CreateApiToken;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Reviews\Enums\ProductReviewStatus;
 use Larasell\Reviews\Events\ProductReviewApproved;
@@ -17,7 +18,17 @@ use Larasell\Reviews\Models\ProductReview;
 beforeEach(function () {
     // Fixed, so the timestamps in the snapshots don't change from run to run.
     $this->travelTo(now()->setDate(2026, 10, 1)->setTime(9, 30));
+
+    $this->apiToken = apiToken();
 });
+
+/**
+ * A plaintext API token, as an admin creates one under Settings > API tokens.
+ */
+function apiToken(): string
+{
+    return app(CreateApiToken::class)->handle(['name' => 'Storefront', 'expires_in' => '1_month'], null)[1];
+}
 
 /**
  * The response body as readable JSON, so snapshot diffs show what changed.
@@ -28,15 +39,17 @@ function snapshotOf(TestResponse $response): string
 }
 
 /**
- * Sends a request the way a JSON:API client does, with the JSON:API media type.
+ * Sends a request the way a JSON:API client does, with the JSON:API media type and the test's
+ * API token, or the given one.
  *
  * @param  array<string, mixed>  $document
  */
-function jsonApi(string $method, string $uri, array $document = [], string $contentType = 'application/vnd.api+json', string $accept = 'application/vnd.api+json'): TestResponse
+function jsonApi(string $method, string $uri, array $document = [], string $contentType = 'application/vnd.api+json', string $accept = 'application/vnd.api+json', ?string $token = null): TestResponse
 {
     return test()->json($method, $uri, $document, [
         'CONTENT_TYPE' => $contentType,
         'Accept' => $accept,
+        'Authorization' => 'Bearer '.($token ?? test()->apiToken),
     ]);
 }
 
@@ -421,6 +434,37 @@ it('limits how many reviews one client can submit per minute', function () {
     $this->travel(61)->seconds();
     jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument())->assertCreated();
 });
+
+it('limits submissions per API token', function () {
+    config(['larasell.reviews.api.submissions_per_minute' => 1]);
+
+    jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument())->assertCreated();
+    jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument())->assertTooManyRequests();
+
+    // Another client, from the same address.
+    jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument(), token: apiToken())->assertCreated();
+});
+
+it('requires an API token from the admin panel', function (string $method, Closure $uri, ?string $token) {
+    $review = apiReview();
+    $headers = ['CONTENT_TYPE' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json'];
+
+    $response = $this->json($method, $uri($review), newReviewDocument(), $token === null ? $headers : [...$headers, 'Authorization' => "Bearer {$token}"])
+        ->assertUnauthorized()
+        ->assertHeader('Content-Type', 'application/vnd.api+json');
+
+    expect(snapshotOf($response))->toMatchSnapshot()
+        ->and(ProductReview::count())->toBe(1)
+        ->and($review->fresh()->rating)->toBe(4);
+})->with([
+    'list' => ['GET', fn () => route('larasell.reviews.api.index'), null],
+    // Not a 404, which would tell a client without a token which reviews exist.
+    'show a review that does not exist' => ['GET', fn () => route('larasell.reviews.api.show', 999), null],
+    'create' => ['POST', fn () => route('larasell.reviews.api.store'), null],
+    'update' => ['PATCH', fn (ProductReview $review) => route('larasell.reviews.api.update', $review), null],
+    'delete' => ['DELETE', fn (ProductReview $review) => route('larasell.reviews.api.destroy', $review), null],
+    'unknown token' => ['GET', fn () => route('larasell.reviews.api.index'), 'larasell_unknown'],
+]);
 
 it('serves the routes under /api/product-reviews', function () {
     expect(route('larasell.reviews.api.index', absolute: false))->toBe('/api/product-reviews')

@@ -43,7 +43,7 @@ class ReviewsServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        // Per client: the signed-in user once the API has authentication, its IP address until then.
+        // Per client: its API token, or its IP address if the configured middleware authenticates no one.
         RateLimiter::for(self::SUBMISSION_LIMITER, fn (Request $request): Limit => Limit::perMinute((int) config('larasell.reviews.api.submissions_per_minute'))
             ->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
