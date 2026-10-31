@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c08e2c8832a14118ce24f96560b5a14",
+    "content-hash": "6bf379184b0ee681fa0b3bf7aa4c5828",
     "packages": [
         {
             "name": "brick/math",
@@ -1181,16 +1181,16 @@
         },
         {
             "name": "larasell-dev/admin",
-            "version": "v0.5.5",
+            "version": "v0.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Larasell-dev/admin.git",
-                "reference": "176f313ab35a7edf91f486bda0154975cfb9fd26"
+                "reference": "7e3ee8b2cde23a1eef4e5bda15689711ece04909"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Larasell-dev/admin/zipball/176f313ab35a7edf91f486bda0154975cfb9fd26",
-                "reference": "176f313ab35a7edf91f486bda0154975cfb9fd26",
+                "url": "https://api.github.com/repos/Larasell-dev/admin/zipball/7e3ee8b2cde23a1eef4e5bda15689711ece04909",
+                "reference": "7e3ee8b2cde23a1eef4e5bda15689711ece04909",
                 "shasum": ""
             },
             "require": {
@@ -1203,6 +1203,7 @@
                 "spatie/laravel-data": "^4.23"
             },
             "require-dev": {
+                "larasell-dev/phpstan-rules": "^0.1",
                 "larastan/larastan": "^3.0",
                 "laravel/pint": "^1.32",
                 "orchestra/testbench": "^11.0",
@@ -1236,10 +1237,10 @@
             "description": "Admin panel for Larasell",
             "support": {
                 "issues": "https://github.com/Larasell-dev/admin/issues",
-                "source": "https://github.com/Larasell-dev/admin/tree/v0.5.5"
+                "source": "https://github.com/Larasell-dev/admin/tree/v0.5.6"
             },
-            "time": "2026-10-31T03:38:56+00:00",
-            "published-time": "2026-10-31T03:39:13+00:00"
+            "time": "2026-10-31T21:00:46+00:00",
+            "published-time": "2026-10-31T21:01:03+00:00"
         },
         {
             "name": "larasell-dev/chronicle",
