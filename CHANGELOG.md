@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.1](https://github.com/Larasell-dev/extension-reviews/compare/v2.0.0...v2.0.1) (2026-10-31)
+
+
+### Bug Fixes
+
+* answer 400 to a request document that isn't a JSON object ([47b9f77](https://github.com/Larasell-dev/extension-reviews/commit/47b9f77810a95ba3167c913c04db72d62b151a29))
+* answer 400 to an include path the API can't serve ([76473ff](https://github.com/Larasell-dev/extension-reviews/commit/76473ff66299206fe4772d85ec4dcd25e336c336))
+
+
+### Miscellaneous Chores
+
+* check the code with larasell-dev/phpstan-rules ([955f514](https://github.com/Larasell-dev/extension-reviews/commit/955f51420c420c2805e732b819cbefa40bf02ee0))
+
 ## [2.0.0](https://github.com/Larasell-dev/extension-reviews/compare/v1.0.1...v2.0.0) (2026-10-31)
 
 
