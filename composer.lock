@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "33debefb5f03094aaa4ef7047a449f81",
+    "content-hash": "a71d02c98f2a2c8f38dad06cfb9f4e47",
     "packages": [
         {
             "name": "brick/math",
@@ -1181,16 +1181,16 @@
         },
         {
             "name": "larasell-dev/admin",
-            "version": "v0.5.1",
+            "version": "v0.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Larasell-dev/admin.git",
-                "reference": "6d71b786eca85b61fd041b2d13afe0d10fec4a8e"
+                "reference": "45a223fa21a414c5c70543f7584e340b3f6f2076"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Larasell-dev/admin/zipball/6d71b786eca85b61fd041b2d13afe0d10fec4a8e",
-                "reference": "6d71b786eca85b61fd041b2d13afe0d10fec4a8e",
+                "url": "https://api.github.com/repos/Larasell-dev/admin/zipball/45a223fa21a414c5c70543f7584e340b3f6f2076",
+                "reference": "45a223fa21a414c5c70543f7584e340b3f6f2076",
                 "shasum": ""
             },
             "require": {
@@ -1236,9 +1236,9 @@
             "description": "Admin panel for Larasell",
             "support": {
                 "issues": "https://github.com/Larasell-dev/admin/issues",
-                "source": "https://github.com/Larasell-dev/admin/tree/v0.5.1"
+                "source": "https://github.com/Larasell-dev/admin/tree/v0.5.4"
             },
-            "time": "2026-10-29T22:49:09+00:00"
+            "time": "2026-10-31T02:40:03+00:00"
         },
         {
             "name": "larasell-dev/chronicle",
