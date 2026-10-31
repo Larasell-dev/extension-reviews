@@ -98,6 +98,8 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/ProductReviewDocument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -171,6 +173,8 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/ProductReviewDocument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -240,6 +244,17 @@ components:
       schema: { type: string, examples: [first_name] }
 
   responses:
+    BadRequest:
+      description: The request document isn't a JSON object, e.g. because it isn't valid JSON.
+      content:
+        application/vnd.api+json:
+          schema: { $ref: "#/components/schemas/ErrorDocument" }
+          example:
+            jsonapi: { version: "1.1" }
+            errors:
+              - status: "400"
+                title: Bad Request
+                detail: The request document must be a JSON object.
     Forbidden:
       description: |
         The request asks for something the API doesn't do: a client-generated id on create
