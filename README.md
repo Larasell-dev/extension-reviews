@@ -37,13 +37,13 @@ deletes reviews. Every request needs an API token, which an admin creates under
 
 ## Events
 
-| Event                    | When                   |
-| ------------------------ | ---------------------- |
-| `ProductReviewSubmitted` | A review is submitted. |
-| `ProductReviewApproved`  | A review is approved.  |
-| `ProductReviewRejected`  | A review is rejected.  |
+| Event                    | When                                        |
+| ------------------------ | ------------------------------------------- |
+| `ProductReviewSubmitted` | A review is submitted.                      |
+| `ProductReviewApproved`  | A review is approved.                       |
+| `ProductReviewRejected`  | A review is rejected.                       |
 | `ProductReviewUpdated`   | A review's rating, name or comment changes. |
-| `ProductReviewDeleted`   | A review is deleted.   |
+| `ProductReviewDeleted`   | A review is deleted.                        |
 
 All live in `Larasell\Reviews\Events`, carry the `$review`, and dispatch after the transaction commits.
 
