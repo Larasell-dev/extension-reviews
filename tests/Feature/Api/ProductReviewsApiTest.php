@@ -207,7 +207,7 @@ it('validates a new review with JSON:API errors that point at the invalid member
         ->and(snapshotOf($response))->toMatchSnapshot();
 })->with([
     // Closures, so the product exists by the time the request is made.
-    'empty' => [fn () => []],
+    'no data' => [fn () => ['meta' => ['client' => 'storefront']]],
     'rating out of range and unknown product' => [fn () => reviewDocument(['rating' => 6, 'name' => 'Alex'], ['product' => productLinkage(999)])],
     'no name and no customer' => [fn () => reviewDocument(['rating' => 3], ['product' => productLinkage(createProduct()->id)])],
     'product linked as another type' => [fn () => reviewDocument(['rating' => 3, 'name' => 'Alex'], ['product' => ['data' => ['type' => 'customers', 'id' => (string) createProduct()->id]]])],
@@ -380,6 +380,27 @@ it('refuses an update that is not sent as JSON:API', function () {
 
     expect($review->fresh()->rating)->toBe(4);
 });
+
+it('answers 400 to a request document that is not a JSON object', function (string $method, Closure $uri, string $body) {
+    $review = apiReview();
+
+    $response = test()->call($method, $uri($review), server: [
+        'CONTENT_TYPE' => 'application/vnd.api+json',
+        'HTTP_ACCEPT' => 'application/vnd.api+json',
+        'HTTP_AUTHORIZATION' => 'Bearer '.test()->apiToken,
+    ], content: $body)
+        ->assertBadRequest()
+        ->assertHeader('Content-Type', 'application/vnd.api+json');
+
+    expect(ProductReview::count())->toBe(1)
+        ->and($review->fresh()->rating)->toBe(4)
+        ->and(snapshotOf($response))->toMatchSnapshot();
+})->with([
+    'malformed JSON on create' => ['POST', fn () => route('larasell.reviews.api.store'), '{"data":'],
+    'malformed JSON on update' => ['PATCH', fn (ProductReview $review) => route('larasell.reviews.api.update', $review), '{"data":'],
+    'an array' => ['POST', fn () => route('larasell.reviews.api.store'), '[]'],
+    'no body' => ['POST', fn () => route('larasell.reviews.api.store'), ''],
+]);
 
 it('accepts request documents that apply a profile', function () {
     jsonApi('POST', route('larasell.reviews.api.store'), newReviewDocument(), contentType: 'application/vnd.api+json; profile="https://example.com/timestamps"')

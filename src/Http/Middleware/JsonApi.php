@@ -55,6 +55,11 @@ class JsonApi
         if (! $this->isServable($contentType)) {
             throw JsonApiError::unsupportedMediaType('The '.self::MEDIA_TYPE.' media type takes no parameters here but profile.');
         }
+
+        // Otherwise validation would report every member as missing, which hides the actual mistake.
+        if (! is_object(json_decode($request->getContent()))) {
+            throw JsonApiError::badRequest('The request document must be a JSON object.');
+        }
     }
 
     /**
