@@ -2,9 +2,9 @@
 
 namespace Larasell\Reviews\Tables;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Larasell\Admin\Enums\Icon;
 use Larasell\Admin\Enums\Table\Variant;
@@ -38,7 +38,7 @@ class ProductReviews extends Table
             BadgeColumn::make('status')
                 ->map(fn (ProductReviewStatus $status): string => $status->label())
                 ->variant(fn (ProductReviewStatus $status): Variant => $status->variant()),
-            TextColumn::make('created_at', 'Date')->map(fn (?Carbon $createdAt): ?string => $createdAt?->diffForHumans()),
+            TextColumn::make('created_at', 'Date')->map(fn (?CarbonInterface $createdAt): ?string => $createdAt?->diffForHumans()),
         ];
     }
 
