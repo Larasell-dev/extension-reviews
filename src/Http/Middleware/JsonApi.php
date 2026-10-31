@@ -20,10 +20,14 @@ class JsonApi
 
     public const string VERSION = '1.1';
 
-    public function handle(Request $request, Closure $next): Response
+    /**
+     * @param  string  ...$includable  The relationship paths clients can name in ?include=.
+     */
+    public function handle(Request $request, Closure $next, string ...$includable): Response
     {
         $this->negotiateContentType($request);
         $this->negotiateAccept($request);
+        $this->checkInclude($request, $includable);
 
         // Laravel keeps the version in a static property shared by every JSON:API resource, so
         // it is set only while the API answers and other resources in the app keep their own.
@@ -75,6 +79,27 @@ class JsonApi
 
         if ($instances !== [] && array_filter($instances, $this->isServable(...)) === []) {
             throw JsonApiError::notAcceptable('Accept '.self::MEDIA_TYPE.' without parameters but profile.');
+        }
+    }
+
+    /**
+     * The spec requires a 400 for an include path the server can't serve, rather than leaving it
+     * out. It's checked before the request is handled, so a create or update doesn't happen first.
+     *
+     * @param  array<string>  $includable
+     */
+    private function checkInclude(Request $request, array $includable): void
+    {
+        if (! $request->query->has('include')) {
+            return;
+        }
+
+        // ConvertEmptyStringsToNull turns an empty ?include= into null.
+        $include = $request->query->all()['include'] ?? '';
+        $paths = is_string($include) && $include !== '' ? explode(',', $include) : [];
+
+        if (! is_string($include) || array_diff($paths, $includable) !== []) {
+            throw JsonApiError::badRequestParameter('Include only '.implode(', ', $includable).'.', 'include');
         }
     }
 

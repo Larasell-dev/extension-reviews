@@ -56,6 +56,8 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/ProductReviewCollectionDocument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "406":
@@ -139,6 +141,8 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: "#/components/schemas/ProductReviewDocument"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -225,7 +229,9 @@ components:
     Include:
       name: include
       in: query
-      description: Related resources to add to `included`, separated by commas.
+      description: |
+        Related resources to add to `included`, separated by commas: `product`, `customer` or both.
+        Any other path is answered with 400.
       schema: { type: string, examples: ["product,customer"] }
     ReviewFields:
       name: fields[product-reviews]
@@ -245,7 +251,9 @@ components:
 
   responses:
     BadRequest:
-      description: The request document isn't a JSON object, e.g. because it isn't valid JSON.
+      description: |
+        The request document isn't a JSON object, e.g. because it isn't valid JSON, or `include`
+        names a path other than `product` and `customer` (`source.parameter` is `include`).
       content:
         application/vnd.api+json:
           schema: { $ref: "#/components/schemas/ErrorDocument" }

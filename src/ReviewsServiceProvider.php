@@ -47,7 +47,8 @@ class ReviewsServiceProvider extends ServiceProvider
         RateLimiter::for(self::SUBMISSION_LIMITER, fn (Request $request): Limit => Limit::perMinute((int) config('larasell.reviews.api.submissions_per_minute'))
             ->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
-        Route::middleware([...config('larasell.reviews.api.middleware'), JsonApi::class])
+        // The relationships of ProductReviewResource; other ?include= paths get a 400.
+        Route::middleware([...config('larasell.reviews.api.middleware'), JsonApi::class.':product,customer'])
             ->prefix(self::API_PREFIX)
             ->name('larasell.reviews.api.')
             ->group(function (): void {
