@@ -5,7 +5,8 @@
     "build": "vite build",
     "dev": "vite",
     "typecheck": "tsc --noEmit",
-    "commitlint": "commitlint --from=HEAD~1 --to=HEAD"
+    "commitlint": "commitlint --from=HEAD~1 --to=HEAD",
+    "lint": "oxlint"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
@@ -16,6 +17,7 @@
     "@types/react": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "laravel-vite-plugin": "^3.2.0",
+    "oxlint": "^1.90.0",
     "react": "^19.3.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
