@@ -3,6 +3,7 @@
 namespace Workbench\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Larasell\Admin\Audit\SystemActor;
 use Larasell\Larasell\Enums\Visibility;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Larasell\Models\Product;
@@ -30,9 +31,12 @@ class DatabaseSeeder extends Seeder
         $ada = Customer::create(['first_name' => 'Ada', 'last_name' => 'Lovelace']);
         $alan = Customer::create(['first_name' => 'Alan', 'last_name' => 'Turing']);
 
-        $approve->handle($submit->handle($lamp, rating: 5, comment: 'Bright, sturdy and the warm light is lovely in the evening.', customer: $ada));
-        $approve->handle($submit->handle($chair, rating: 4, comment: 'Comfortable for long days. Took a while to assemble.', customer: $alan));
-        $reject->handle($submit->handle($mug, rating: 1, name: 'Spam Bot', comment: 'Buy cheap watches at example.com'));
+        // Audited as the seeder rather than as an unknown actor.
+        $seeder = new SystemActor('workbench-seeder');
+
+        $approve->handle($submit->handle($lamp, rating: 5, comment: 'Bright, sturdy and the warm light is lovely in the evening.', customer: $ada), $seeder);
+        $approve->handle($submit->handle($chair, rating: 4, comment: 'Comfortable for long days. Took a while to assemble.', customer: $alan), $seeder);
+        $reject->handle($submit->handle($mug, rating: 1, name: 'Spam Bot', comment: 'Buy cheap watches at example.com'), $seeder);
         $submit->handle($mug, rating: 3, name: 'Grace Hopper', comment: 'Keeps coffee warm, but the handle gets hot.');
         $submit->handle($lamp, rating: 2, customer: $alan);
         $submit->handle($chair, rating: 5, name: 'Katherine Johnson');

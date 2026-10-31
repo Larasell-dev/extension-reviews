@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 use Illuminate\Http\Resources\JsonApi\JsonApiResource;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
-use Larasell\Admin\Actions\ApiTokens\CreateApiToken;
+use Larasell\Admin\Models\ApiToken;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Reviews\Enums\ProductReviewStatus;
 use Larasell\Reviews\Events\ProductReviewApproved;
@@ -27,7 +28,12 @@ beforeEach(function () {
  */
 function apiToken(): string
 {
-    return app(CreateApiToken::class)->handle(['name' => 'Storefront', 'expires_in' => '1_month'], null)[1];
+    $token = 'larasell_'.Str::random(40);
+
+    // Stored as the admin panel stores it; creating it there would also audit it, as an admin.
+    ApiToken::query()->create(['name' => 'Storefront', 'token_hash' => hash('sha256', $token), 'expires_at' => now()->addMonth()]);
+
+    return $token;
 }
 
 /**

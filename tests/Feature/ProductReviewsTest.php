@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
+use Larasell\Admin\Audit\SystemActor;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Reviews\Actions\ApproveProductReview;
 use Larasell\Reviews\Actions\RejectProductReview;
@@ -13,6 +14,11 @@ use Larasell\Reviews\Events\ProductReviewRejected;
 use Larasell\Reviews\Events\ProductReviewSubmitted;
 use Larasell\Reviews\Exceptions\InvalidProductReview;
 use Larasell\Reviews\Models\ProductReview;
+
+function moderator(): SystemActor
+{
+    return new SystemActor('review-moderation');
+}
 
 it('submits a pending review for a product', function () {
     Event::fake();
@@ -107,7 +113,7 @@ it('approves a review', function (ProductReviewStatus $from) {
     $review->update(['status' => $from]);
     Event::fake();
 
-    app(ApproveProductReview::class)->handle($review);
+    app(ApproveProductReview::class)->handle($review, moderator());
 
     expect($review->fresh()->status)->toBe(ProductReviewStatus::Approved);
     Event::assertDispatchedTimes(ProductReviewApproved::class, 1);
@@ -120,7 +126,7 @@ it('rejects a review', function (ProductReviewStatus $from) {
     $review->update(['status' => $from]);
     Event::fake();
 
-    app(RejectProductReview::class)->handle($review);
+    app(RejectProductReview::class)->handle($review, moderator());
 
     expect($review->fresh()->status)->toBe(ProductReviewStatus::Rejected);
     Event::assertDispatchedTimes(ProductReviewRejected::class, 1);
@@ -130,13 +136,13 @@ it('rejects a review', function (ProductReviewStatus $from) {
 
 it('does not announce a review again when it already has that status', function () {
     $review = app(SubmitProductReview::class)->handle(createProduct(), rating: 5, name: 'Alex');
-    app(ApproveProductReview::class)->handle($review);
+    app(ApproveProductReview::class)->handle($review, moderator());
     $rejected = app(SubmitProductReview::class)->handle(createProduct('Desk chair'), rating: 1, name: 'Sam');
-    app(RejectProductReview::class)->handle($rejected);
+    app(RejectProductReview::class)->handle($rejected, moderator());
     Event::fake();
 
-    app(ApproveProductReview::class)->handle($review);
-    app(RejectProductReview::class)->handle($rejected);
+    app(ApproveProductReview::class)->handle($review, moderator());
+    app(RejectProductReview::class)->handle($rejected, moderator());
 
     Event::assertNotDispatched(ProductReviewApproved::class);
     Event::assertNotDispatched(ProductReviewRejected::class);

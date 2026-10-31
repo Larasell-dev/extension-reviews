@@ -5,6 +5,8 @@ namespace Larasell\Reviews\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Larasell\Admin\Audit\Actor;
+use Larasell\Admin\Audit\UnknownActor;
 use Larasell\Larasell\Models\Customer;
 use Larasell\Larasell\Models\ModelRegistry;
 use Larasell\Larasell\Models\Product;
@@ -70,21 +72,34 @@ class ProductReviewController
     {
         $validated = $request->reviewAttributes();
 
-        $update->handle($review, $validated);
+        $actor = $this->actor($request);
+
+        $update->handle($review, $validated, $actor);
 
         match (isset($validated['status']) ? ProductReviewStatus::from($validated['status']) : null) {
-            ProductReviewStatus::Approved => $approve->handle($review),
-            ProductReviewStatus::Rejected => $reject->handle($review),
+            ProductReviewStatus::Approved => $approve->handle($review, $actor),
+            ProductReviewStatus::Rejected => $reject->handle($review, $actor),
             default => null,
         };
 
         return new ProductReviewResource($review);
     }
 
-    public function destroy(ProductReview $review, DeleteProductReview $delete): Response
+    public function destroy(Request $request, ProductReview $review, DeleteProductReview $delete): Response
     {
-        $delete->handle($review);
+        $delete->handle($review, $this->actor($request));
 
         return response()->noContent();
+    }
+
+    /**
+     * The API token, or, when larasell.reviews.api.middleware authenticates no one, an unknown
+     * actor that says so.
+     */
+    private function actor(Request $request): Actor|UnknownActor
+    {
+        $user = $request->user();
+
+        return $user instanceof Actor ? $user : new UnknownActor('The product reviews API authenticates no one, as configured in larasell.reviews.api.middleware.');
     }
 }

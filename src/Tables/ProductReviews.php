@@ -5,9 +5,11 @@ namespace Larasell\Reviews\Tables;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Larasell\Admin\Enums\Icon;
 use Larasell\Admin\Enums\Table\Variant;
+use Larasell\Admin\Models\Admin;
 use Larasell\Admin\Tables\Actions\Action;
 use Larasell\Admin\Tables\Columns\BadgeColumn;
 use Larasell\Admin\Tables\Columns\TextColumn;
@@ -50,10 +52,10 @@ class ProductReviews extends Table
     public function actions(): array
     {
         return [
-            Action::make('Approve', handle: fn (ProductReview $review) => app(ApproveProductReview::class)->handle($review))
+            Action::make('Approve', handle: fn (ProductReview $review) => app(ApproveProductReview::class)->handle($review, $this->admin()))
                 ->hidden(fn (ProductReview $review): bool => $review->status === ProductReviewStatus::Approved)
                 ->icon(Icon::Check),
-            Action::make('Reject', handle: fn (ProductReview $review) => app(RejectProductReview::class)->handle($review))
+            Action::make('Reject', handle: fn (ProductReview $review) => app(RejectProductReview::class)->handle($review, $this->admin()))
                 ->hidden(fn (ProductReview $review): bool => $review->status === ProductReviewStatus::Rejected)
                 ->icon(Icon::Close),
         ];
@@ -70,6 +72,20 @@ class ProductReviews extends Table
             'reject' => route('larasell.admin.product-reviews.rejection.store', $record),
             default => throw new LogicException("Action [{$action->name()}] has no route."),
         };
+    }
+
+    /**
+     * Who runs the actions: the table only shows to signed-in admins.
+     */
+    private function admin(): Admin
+    {
+        $admin = Auth::guard('larasell-admin')->user();
+
+        if (! $admin instanceof Admin) {
+            throw new LogicException('The product reviews table runs actions only for a signed-in admin.');
+        }
+
+        return $admin;
     }
 
     public function emptyState(): array
