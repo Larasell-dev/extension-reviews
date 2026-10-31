@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.2](https://github.com/Larasell-dev/extension-reviews/compare/v2.0.1...v2.0.2) (2026-10-31)
+
+
+### Miscellaneous Chores
+
+* enable the @larasell-dev/ui lint rules ([ec74c4a](https://github.com/Larasell-dev/extension-reviews/commit/ec74c4a6e6d480d4085d96b8bd029ed5321967b4))
+* format with oxfmt ([c0d7e9a](https://github.com/Larasell-dev/extension-reviews/commit/c0d7e9a7a4351fadd004fca1ebc4473e71917f23))
+
 ## [2.0.1](https://github.com/Larasell-dev/extension-reviews/compare/v2.0.0...v2.0.1) (2026-10-31)
 
 
