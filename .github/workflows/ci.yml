@@ -84,6 +84,9 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
+      - name: Check formatting
+        run: npm run format:check
+
       - name: Generate enum types
         run: composer types:enums
 
