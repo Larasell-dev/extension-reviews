@@ -80,7 +80,11 @@ export default function Show({ review, indexUrl, moderation }: Props) {
 
 function Stars({ rating, max }: { rating: number; max: number }) {
   return (
-    <div className="flex items-center gap-0.5 text-amber-500" role="img" aria-label={`${rating} out of ${max} stars`}>
+    <div
+      className="flex items-center gap-0.5 text-amber-500"
+      role="img"
+      aria-label={`${rating} out of ${max} stars`}
+    >
       {Array.from({ length: max }, (_, index) => (
         <Icon key={index} icon={index < rating ? StarFill : StarLine} />
       ))}
