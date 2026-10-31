@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a71d02c98f2a2c8f38dad06cfb9f4e47",
+    "content-hash": "366bae832a5fbcfe4429182f829ef1cb",
     "packages": [
         {
             "name": "brick/math",
@@ -1181,16 +1181,16 @@
         },
         {
             "name": "larasell-dev/admin",
-            "version": "v0.5.4",
+            "version": "v0.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Larasell-dev/admin.git",
-                "reference": "45a223fa21a414c5c70543f7584e340b3f6f2076"
+                "reference": "176f313ab35a7edf91f486bda0154975cfb9fd26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Larasell-dev/admin/zipball/45a223fa21a414c5c70543f7584e340b3f6f2076",
-                "reference": "45a223fa21a414c5c70543f7584e340b3f6f2076",
+                "url": "https://api.github.com/repos/Larasell-dev/admin/zipball/176f313ab35a7edf91f486bda0154975cfb9fd26",
+                "reference": "176f313ab35a7edf91f486bda0154975cfb9fd26",
                 "shasum": ""
             },
             "require": {
@@ -1236,9 +1236,10 @@
             "description": "Admin panel for Larasell",
             "support": {
                 "issues": "https://github.com/Larasell-dev/admin/issues",
-                "source": "https://github.com/Larasell-dev/admin/tree/v0.5.4"
+                "source": "https://github.com/Larasell-dev/admin/tree/v0.5.5"
             },
-            "time": "2026-10-31T02:40:03+00:00"
+            "time": "2026-10-31T03:38:56+00:00",
+            "published-time": "2026-10-31T03:39:13+00:00"
         },
         {
             "name": "larasell-dev/chronicle",
@@ -11320,5 +11321,5 @@
     "platform-overrides": {
         "php": "8.3"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }
