@@ -1,6 +1,6 @@
 {
   "resources/css/admin.css": {
-    "file": "assets/admin-C9GOh3xy.css",
+    "file": "assets/admin-4Cf-hQBJ.css",
     "name": "admin",
     "names": [
       "admin.css"
@@ -8,10 +8,22 @@
     "src": "resources/css/admin.css",
     "isEntry": true
   },
+  "resources/js/Pages/ProductReview/Show.tsx": {
+    "file": "assets/Show-D9f39Fzq.js",
+    "name": "Show",
+    "src": "resources/js/Pages/ProductReview/Show.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/admin.ts"
+    ]
+  },
   "resources/js/admin.ts": {
-    "file": "assets/admin-fKqNEYxQ.js",
+    "file": "assets/admin-DYckcxgc.js",
     "name": "admin",
     "src": "resources/js/admin.ts",
-    "isEntry": true
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/Pages/ProductReview/Show.tsx"
+    ]
   }
 }
